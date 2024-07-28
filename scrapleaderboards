@@ -1,0 +1,383 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+import time, openpyxl
+from openpyxl import load_workbook
+
+def scraping(category, year, duration):
+    # Initialize the Selenium WebDriver (e.g., Chrome)
+    driver = webdriver.Chrome()
+
+    # Navigate to the Metaculus leaderboard page
+    driver.get(f"https://www.metaculus.com/leaderboard/?category={category}&year={year}&duration={duration}")
+
+    # Wait for the page to load completely
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'flex-1'))
+    )
+    time.sleep(0.5)
+
+    # Extract the page source and pass it to Beautiful Soup
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+    # Close the WebDriver
+    driver.quit()
+
+    return soup
+
+def createSheet(file_path):
+    try:
+        workbook = load_workbook(file_path)
+    except FileNotFoundError:
+        workbook = openpyxl.Workbook()
+
+    # Create a new sheet in first position
+    sheet_name = f"{time.strftime('%d-%m')}"
+    if sheet_name in workbook.sheetnames:
+        raise ValueError("Sheet already exists")
+
+    worksheet = workbook.create_sheet(title=sheet_name, index = 0)
+    return worksheet, workbook
+
+def scrapBaseline(year):
+    category = "baseline"
+    duration = 1
+
+    # ouverture du csv et check
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} Baseline Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Score", "Questions"])
+
+    # Write the data
+    for rank, name, question, score in zip(ranks, names, questions, scores):
+        row = [rank.text.strip(), name.text.strip(), score.text.strip(), question.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapBaseline2(year):
+    year = 2033 if year > 2031 else 2031 if year > 2029 else 2029 if year > 2027 else 2027 if year > 2025 else 2025
+    category = "baseline"
+    duration = 2
+    
+    # écriture dans le csv et check
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} 2 Years Baseline Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Score", "Questions"])
+
+    # Write the data
+    for rank, name, question, score in zip(ranks, names, questions, scores):
+        row = [rank.text.strip(), name.text.strip(), score.text.strip(), question.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapBaseline5(year):
+    year = 2035 if year > 2030 else 2030 if year > 2025 else 2025
+    category = "baseline"
+    duration = 5
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} 5 Years Baseline Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Score", "Questions"])
+
+    # Write the data
+    for rank, name, question, score in zip(ranks, names, questions, scores):
+        row = [rank.text.strip(), name.text.strip(), score.text.strip(), question.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapBaseline10(year):
+    year = 2035 if year>2025 else 2025
+    category = "baseline"
+    duration = 10
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} 10 Years Baseline Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Score", "Questions"])
+
+    # Write the data
+    for rank, name, question, score in zip(ranks, names, questions, scores):
+        row = [rank.text.strip(), name.text.strip(), score.text.strip(), question.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapPeer(year):
+    category = "peer"
+    duration = 1
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} Peer Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    coverages = soup.find_all('td', class_='hidden w-32 p-0 font-mono text-base leading-4 @lg:!table-cell text-metac-gray-600 dark:text-metac-gray-600-dark')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Questions", "Coverage", "Score"])
+
+    # Write the data
+    for rank, name, question, coverage, score in zip(ranks, names, questions, coverages, scores):
+        row = [rank.text.strip(), name.text.strip(), question.text.strip(), coverage.text.strip(), score.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapPeer2(year):
+    year = 2033 if year > 2031 else 2031 if year > 2029 else 2029 if year > 2027 else 2027 if year > 2025 else 2025
+    category = "peer"
+    duration = 2
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} 2 Years Peer Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    coverages = soup.find_all('td', class_='hidden w-32 p-0 font-mono text-base leading-4 @lg:!table-cell text-metac-gray-600 dark:text-metac-gray-600-dark')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Create a new sheet in first position
+    sheet_name = f"{time.strftime('%d-%m')}"
+    worksheet = workbook.create_sheet(title=sheet_name)
+    workbook.move_sheet(worksheet, 1)
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Questions", "Coverage", "Score"])
+
+    # Write the data
+    for rank, name, question, coverage, score in zip(ranks, names, questions, coverages, scores):
+        row = [rank.text.strip(), name.text.strip(), question.text.strip(), coverage.text.strip(), score.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapPeer5(year):
+    year = 2035 if year > 2030 else 2030 if year > 2025 else 2025
+    category = "peer"
+    duration = 5
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} 5 Years Peer Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    coverages = soup.find_all('td', class_='hidden w-32 p-0 font-mono text-base leading-4 @lg:!table-cell text-metac-gray-600 dark:text-metac-gray-600-dark')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Questions", "Coverage", "Score"])
+
+    # Write the data
+    for rank, name, question, coverage, score in zip(ranks, names, questions, coverages, scores):
+        row = [rank.text.strip(), name.text.strip(), question.text.strip(), coverage.text.strip(), score.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapPeer10(year):
+    year = 2035 if year>2025 else 2025
+    category = "peer"
+    duration = 10
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} 10 Years Peer Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    coverages = soup.find_all('td', class_='hidden w-32 p-0 font-mono text-base leading-4 @lg:!table-cell text-metac-gray-600 dark:text-metac-gray-600-dark')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Questions", "Coverage", "Score"])
+
+    # Write the data
+    for rank, name, question, coverage, score in zip(ranks, names, questions, coverages, scores):
+        row = [rank.text.strip(), name.text.strip(), question.text.strip(), coverage.text.strip(), score.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapComments(year):
+    category = "comments"
+    duration = 1
+
+    # écriture dans le csv
+    file_path = f'C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} Comments Ranking.xlsx'
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    comments = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Score", "Comments"])
+
+    # Write the data
+    for rank, name, comment, score in zip(ranks, names, comments, scores):
+        row = [rank.text.strip(), name.text.strip(), score.text.strip(), comment.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+def scrapQuestionWriting(year):
+    category = "questionWriting"
+    duration = 1
+
+    # écriture dans le csv
+    file_path = f"C:\\Users\\Yann\\Desktop\\PROGRAMMATION PYTHON\\Scraping\\{year} questionWriting Ranking.xlsx"
+
+    try:
+        worksheet, workbook = createSheet(file_path)
+    except ValueError:
+        return
+    
+    soup = scraping(category, year, duration)
+
+    # data leaderboard baseline
+    ranks = soup.find_all('span', class_='flex-1 text-center')
+    names = soup.find_all('a', class_='flex items-center truncate px-4 py-2.5 no-underline')
+    questions = soup.find_all('td', class_='hidden w-24 p-0 font-mono text-base leading-4 @md:!table-cell')
+    scores = soup.find_all('td', class_='w-20 p-0 font-mono text-base leading-4 text-metac-gray-600 dark:text-metac-gray-600-dark')
+
+    # Write the header
+    worksheet.append(["Rank", "Name", "Score", "Questions"])
+
+    # Write the data
+    for rank, name, question, score in zip(ranks, names, questions, scores):
+        row = [rank.text.strip(), name.text.strip(), score.text.strip(), question.text.strip()]
+        worksheet.append(row)
+
+    # Save the workbook
+    workbook.save(file_path)
+
+if __name__ == "__main__":
+    year = 2024
+
+    scrapBaseline(year)
+    # scrapBaseline2(year)
+    scrapBaseline5(year)
+    scrapBaseline10(year)
+
+    scrapPeer(year)
+    # scrapPeer2(year)
+    scrapPeer5(year)
+    scrapPeer10(year)
+
+    scrapComments(year)
+    scrapQuestionWriting(year)
